@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Home</title>
+</head>
+<body>
+    {% if data %}
+        {% for row in data %}
+            <h2> {{ row[1] }}</h2>
+            <p> By {{ row[0] }} on {{ row[2] }}</p>
+            <p> {{ row[3] }}</p>
+        {% endfor %}
+    {% else %}
+        <h2> brak </h2>
+    {% endif %}
+</body>
+</html>

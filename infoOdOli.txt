@@ -5,3 +5,8 @@ Coś tam próbowałam porobić
     stworzenie bazy tylko raz można - utworzy się 'baza.db' po lewej stronie.
     Zdecydowałam się na SQLite na razie
 4. w app.py dałam link do yt gdzie się uczyłam od tego zioma - ma bardzo dużo filmików
+5. storzyłam strona główna coś działa ale zobaczymy z template
+6. stworzonie dodawania wpisu(get i post) jako formlularz
+7. stworzenie możliwości usunięcia i modyfikacji
+8. muszę ogarnąć logowanie
+9. musimy dodać opcje wylogowania (bo nie mamy)
