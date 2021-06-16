@@ -1,18 +1,38 @@
 # https://www.youtube.com/playlist?list=PLLjmbh6XPGK4ISY747FUHXEl9lBxre4mM
 # na podstawie tego coś tam sobie pisałam
 
-# zaimportowanie framework Flask
-from flask import Flask, render_template, request, redirect, url_for, session, flash, g
 
 import sqlite3
+from functools import wraps, bcrypt
+
+from flask import Flask, render_template, request, redirect, url_for, session, flash
+from flask.ext.sqlalchemy import SQLAlchemy
+from flask.ext.bcrypt import Bcrypt
+
 
 # stworzenie obiektu aplikacji
 app = Flask(__name__)
+bcrypt = Bcrypt(app)
 
-# potrzebne do session - każde logowanie to inna sesja - trzeba to przemyśleć
-app.secret_key = "sprawdzenie"
+app.config.from_object('config.BaseConfig')
 
-#strona główna
+db = SQLAlchemy(app)
+
+
+# autoryzacja/ uwierzytelnienie
+def login_required(f):
+    @wraps(f)
+    def wrap(*args, **kwargs):
+        if 'logged_in' in session:
+            return f(*args, **kwargs)
+        else:
+            flash('You need to login first.')
+            return redirect(url_for('login'))
+
+    return wrap
+
+
+# strona główna
 @app.route('/')
 def welcome():
     conn = sqlite3.connect("baza.db")
@@ -24,9 +44,10 @@ def welcome():
     conn.commit()
     conn.close()
 
-    return render_template('strona.html', data=data)
+    return render_template('mainpage.html', data=data)
 
-#możliwość dodania nowego wpisu
+
+# możliwość dodania nowego wpisu
 @app.route('/add', methods=["GET"])
 def add():
     try:
@@ -34,13 +55,14 @@ def add():
         cursor = conn.cursor()
 
         query = "SELECT * FROM wpis"
-        cursor.execute(query,)
+        cursor.execute(query, )
         data = cursor.fetchall()
         conn.commit()
 
-        return render_template('nowy-post.html', data=data)
+        return render_template('new.html', data=data)
     except Exception as err:
         return "Error!" + str(err), 500
+
 
 @app.route('/add', methods=["POST"])
 def add_db():
@@ -58,11 +80,12 @@ def add_db():
         conn.commit()
         conn.close()
 
-        return  redirect(url_for(welcome))
+        return redirect(url_for(welcome))
     except Exception as err:
         return "Error!" + str(err), 500
 
-#możliwość edycji wybranego postu
+
+# możliwość edycji wybranego postu
 @app.route('/edit/<int:id>', methods=["GET"])
 def edit(id):
     try:
@@ -75,11 +98,12 @@ def edit(id):
         conn.commit()
         conn.close()
 
-        return render_template('modyfikacja.html', data=data[0])
+        return render_template('modify.html', data=data[0])
     except Exception as err:
         return "Error!" + str(err), 500
 
-@app.route('/edit', methods = ["POST"])
+
+@app.route('/edit', methods=["POST"])
 def edit_db():
     try:
         mtresc = request.form['tresc']
@@ -96,7 +120,8 @@ def edit_db():
     except Exception as err:
         return "Error!" + str(err), 500
 
-#możliwość usunięcia - bez metody POST, żeby od razu z ikonki można było usunąć
+
+# możliwość usunięcia - bez metody POST, żeby od razu z ikonki można było usunąć
 @app.route('/delete/<int:id>', methods=["GET"])
 def delete(id):
     try:
@@ -112,24 +137,34 @@ def delete(id):
     except Exception as err:
         return "Error!" + str(err), 500
 
-@app.route('/logowanie', methods=['GET', 'POST'])
+
+# strona do logowania
+@app.route('/login', methods=['GET', 'POST'])
 def login():
     error = None
+    form = LoginForm(request.form)
     if request.method == 'POST':
+        # na razie zrobione wg tutorialu trzeb będzię połączyć się z baza aby wyszukiwało
+        # użytkowników
         if request.form['username'] != 'admin' or request.form['password'] != 'admin':
-            error = 'Błąd!. Podaj jeszcze raz!'
+            error = 'Error! Please try again!'
         else:
             session['logged_id'] = True
-            flash('Zostałeś zalogowany')
-            return redirect(url_for('home'))
-    return render_template("logowanie.html", error=error)
+            flash('You are login!')
+            return redirect(url_for('welcome'))
+    return render_template("login.html", error=error)
 
 
-@app.route('/wylogowanie')
+# wylogowanie
+@app.route('/logout')
+@login_required
 def logout():
     session.pop('logged_id', None)
-    flash('Zostałeś wylogowany. Do następnego razu!')
+    flash('You are logout. See you soon!')
     return redirect(url_for('welcome'))
+
+
+
 
 # start aplikacji wywołane metodą 'run()'
 if __name__ == '__main__':
