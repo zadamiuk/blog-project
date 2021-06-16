@@ -2,6 +2,7 @@ from app import db, bcrypt
 
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship
+from datetime import datetime
 
 
 class BlogPost(db.Model):
@@ -29,7 +30,7 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     login = db.Column(db.String, nullable=False)
     password = db.Column(db.String, nullable=False)
-    wpis = relationship("BlogPost", backref='autor')
+    #wpis = relationship("BlogPost", backref='autor')
 
     def __init__(self, login, password):
         self.login = login

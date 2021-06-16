@@ -3,20 +3,23 @@
 
 
 import sqlite3
-from functools import wraps, bcrypt
+import SQLAlchemy as SQLAlchemy
 
 from flask import Flask, render_template, request, redirect, url_for, session, flash
-from flask.ext.sqlalchemy import SQLAlchemy
-from flask.ext.bcrypt import Bcrypt
+from functools import wraps
 
+from models import User
 
 # stworzenie obiektu aplikacji
 app = Flask(__name__)
-bcrypt = Bcrypt(app)
 
-app.config.from_object('config.BaseConfig')
+app.config['SECRET_KEY'] = 'szalony kod'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///baza.db'
+
 
 db = SQLAlchemy(app)
+db.create_all()
+db.session.commit()
 
 
 # autoryzacja/ uwierzytelnienie
@@ -67,7 +70,7 @@ def add():
 @app.route('/add', methods=["POST"])
 def add_db():
     try:
-        mautor = request.form["autor"]
+        #mautor = request.form["autor"]
         mtytul = request.form["tytul"]
         mdata = request.form["data"]
         mtresc = request.form["tresc"]
@@ -75,8 +78,8 @@ def add_db():
         conn = sqlite3.connect("baza.db")
         cursor = conn.cursor()
 
-        query = "INSERT INTO wpis(autor, tytul, data, tresc) VALUES(?,?,?,?)"
-        cursor.execute(query, (mautor, mtytul, mdata, mtresc))
+        query = "INSERT INTO wpis(tytul, data, tresc) VALUES(?,?,?,?)"
+        cursor.execute(query, (mtytul, mdata, mtresc))
         conn.commit()
         conn.close()
 
@@ -142,8 +145,8 @@ def delete(id):
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     error = None
-    form = LoginForm(request.form)
     if request.method == 'POST':
+
         # na razie zrobione wg tutorialu trzeb będzię połączyć się z baza aby wyszukiwało
         # użytkowników
         if request.form['username'] != 'admin' or request.form['password'] != 'admin':
