@@ -5,7 +5,7 @@ from sqlalchemy import ForeignKey
 
 dataBase = SQLAlchemy()
 
-
+#model użytkonika
 class User(dataBase.Model):
     __tablename__ = "user"
 
@@ -37,7 +37,7 @@ class User(dataBase.Model):
         return unicode(self.id)
 '''
 
-
+#model wpisu
 class BlogSfera(dataBase.Model):
     __tablename__ = "wpis"
 
@@ -46,7 +46,7 @@ class BlogSfera(dataBase.Model):
     data = dataBase.Column(dataBase.DateTime, nullable=False)
     tresc = dataBase.Column(dataBase.String, nullable=False)
 
-    # autor_id = dataBase.Column(dataBase.Integer, ForeignKey('users.id'))
+    # autor_id = dataBase.Column(dataBase.Integer, ForeignKey('users.id')) #związek między wpisem a user
 
     def __init__(self, tytul, data, tresc):
         self.tytul = tytul
