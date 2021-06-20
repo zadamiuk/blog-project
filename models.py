@@ -29,7 +29,7 @@ class BlogSfera(dataBase.Model):
 
     id = dataBase.Column(dataBase.Integer, primary_key=True)
     tytul = dataBase.Column(dataBase.String, nullable=False)
-    data = dataBase.Column(dataBase.DateTime, nullable=False)
+    data = dataBase.Column(dataBase.Date, nullable=False)
     tresc = dataBase.Column(dataBase.String, nullable=False)
 
     user_id = dataBase.Column(dataBase.Integer, ForeignKey('user.id'), nullable=False)  # związek między wpisem a user

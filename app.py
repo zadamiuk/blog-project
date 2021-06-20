@@ -59,11 +59,11 @@ def login():
         login = request.form['login']
         password = request.form['password']
 
-        user = User.query.filter_by(login=login)  # szukanie loginu w bazie
+        user = User.query.filter_by(login=login).first()  # szukanie loginu w bazie
 
         if user is not None and password:  # warunek jak znajdziemy login
             session['logged_in'] = True
-            # session['user_id'] = user.user_id
+            session['user_id'] = user.id
             return redirect(url_for('my'))  # login jest to przekierowanie na stronę
         else:
             flash('Try again!')
@@ -78,9 +78,8 @@ def my():
     if not session.get('logged_in'):
         return redirect(url_for('login'))
 
-    conn = dataBaseConn()
-    data = conn.execute('SELECT * FROM wpis').fetchall()  # wypisanie wszystkich postów
-    conn.close()
+    data = BlogSfera.query.all()
+
     return render_template('mypage.html', data=data)
 
 
@@ -90,6 +89,7 @@ def logout():
     if not session.get('logged_in'):
         return redirect(url_for('login'))
     else:
+        session.pop('user_id', None)
         session['logged_in'] = False
         flash('You are logout. See you soon!')
     return redirect(url_for('welcome'))
@@ -106,12 +106,13 @@ def add():
         tytul = request.form['title']
         tresc = request.form['content']
         data = datetime.date.today()
+        user_id = session["user_id"]
 
         if not tytul:
             flash('Tytuł jest obowiązkowy!')  # warunek na swtorzenie nowego wpisu
         else:
             # !!!UWAGA!!! tworzenie nowego wpisu -> z ręki wpisane ID
-            newPost = BlogSfera(tytul=tytul, data=data, tresc=tresc, user_id=1)  # tworzenie nowego wpisu
+            newPost = BlogSfera(tytul=tytul, data=data, tresc=tresc, user_id=user_id)  # tworzenie nowego wpisu
             dataBase.session.add(newPost)  # dodanie nowego wpisu do bazy
             dataBase.session.commit()  # potwierdzenie zmian
             flash('Post was created!')
@@ -126,7 +127,7 @@ def delete(id):
         return redirect(url_for('login'))
 
     conn = dataBaseConn()
-    conn.execute('DELETE FROM wpis WHERE wpis_id=? ', (id,))
+    conn.execute('DELETE FROM wpis WHERE id=? ', (id,))
     conn.commit()
     conn.close()
     return redirect(url_for('my'))
