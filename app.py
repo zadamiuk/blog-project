@@ -4,7 +4,6 @@ import sqlite3
 
 from flask import Flask, render_template, request, flash, redirect, url_for, session
 
-
 from models import User, BlogSfera, dataBase
 
 # stworzenie aplikacji
@@ -118,6 +117,7 @@ def add():
             return redirect(url_for('my'))
 
     return render_template('new.html')
+
 
 # usuwanie wpisu
 @app.route('/delete/<int:id>', methods=["GET"])
