@@ -1,4 +1,16 @@
 <h1 class="title">
-  Welcome, {{ name }}!
+  Welcome, {{ login }}!
   <a class="nav-link" href="{{url_for('logout')}}">Logout</a>
 </h1>
+  <body>
+  {% if data %}
+        {% for row in data %}
+            <h2> {{ row[1] }}</h2>
+            <p> By {{ row[0] }} on {{ row[2] }}</p>
+            <p> {{ row[3] }}</p>
+        {% endfor %}
+    {% else %}
+        <h2> brak </h2>
+    {% endif %}
+  <a class="nav-link" href="{{url_for('add')}}">New Post</a>
+  </body>

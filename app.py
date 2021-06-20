@@ -1,9 +1,9 @@
 import datetime
 import sqlite3
-from functools import wraps
 
 from flask import Flask, render_template, request, flash, redirect, url_for, session
 from models import User, BlogSfera, dataBase
+from flask_login import login_required, login_user, logout_user, LoginManager
 
 app = Flask(__name__)
 
@@ -12,20 +12,16 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///baza.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 dataBase.init_app(app)
+#login_manager = LoginManager()
+#login_manager.init_app(app)
 
+#login_manager.login_view = "users.login"
+'''
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.filter(User.id == int(user_id)).first()
 
-def login_required(f):
-    @wraps(f)
-    def wrap(*args, **kwargs):
-        if 'logged_in' in session:
-            return f(*args, **kwargs)
-        else:
-            flash('You need to login first.')
-            return redirect(url_for('login'))
-
-    return wrap
-
-
+'''
 # strona główna z wypisem ogrganiczonych wpisów
 @app.route('/')
 def welcome():
@@ -51,6 +47,7 @@ def register():
 
         dataBase.session.add(newUser)
         dataBase.session.commit()
+        #login_user(user)
         flash('Account has been creates! Log in!')
 
         return redirect(url_for('login'))
@@ -62,12 +59,14 @@ def register():
 @app.route('/login', methods=["GET", "POST"])
 def login():
     if request.method == 'POST':
+
         login = request.form['login']
         password = request.form['password']
 
         user = User.query.filter_by(login=login)
 
-        if user and password:
+        if user is not None and password:
+            #login_user(user)
             return redirect(url_for('my'))
         else:
             flash('Try again!')
@@ -79,13 +78,14 @@ def login():
 # strona użytkownika ze wszystkimi wpisami innych użytkowników
 @app.route('/mypage')
 def my():
-    return render_template('mypage.html')
+    data = dataBase.session.query(BlogSfera).all()
+    return render_template('mypage.html', data=data)
 
 
 # wylogowanie użytkownika
 @app.route('/logout')
-@login_required
 def logout():
+    #logout_user()
     session.pop('logged_id', None)
     flash('You are logout. See you soon!')
     return redirect(url_for('welcome'))
@@ -93,7 +93,6 @@ def logout():
 
 # strona do dodania nowej notatki
 @app.route('/new', methods=["GET", "POST"])
-@login_required
 def add():
     if request.method == 'POST':
         tytul = request.form['title']
