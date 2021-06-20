@@ -112,8 +112,8 @@ def add():
         else:
             # !!!UWAGA!!! tworzenie nowego wpisu -> z ręki wpisane ID
             newPost = BlogSfera(tytul=tytul, data=data, tresc=tresc, user_id=1)  # tworzenie nowego wpisu
-            dataBase.session_b.add(newPost)  # dodanie nowego wpisu do bazy
-            dataBase.session_b.commit()  # potwierdzenie zmian
+            dataBase.session.add(newPost)  # dodanie nowego wpisu do bazy
+            dataBase.session.commit()  # potwierdzenie zmian
             flash('Post was created!')
             return redirect(url_for('my'))
 
