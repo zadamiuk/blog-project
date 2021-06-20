@@ -1,34 +1,27 @@
+# dodanie odpowiednich bibliotek
 import datetime
 import sqlite3
 
 from flask import Flask, render_template, request, flash, redirect, url_for, session
-from models import User, BlogSfera, dataBase
-from flask_login import login_required, login_user, logout_user, LoginManager
 
+
+from models import User, BlogSfera, dataBase
+
+# stworzenie aplikacji
 app = Flask(__name__)
 
+# konfiguracja aplikacji
 app.config['SECRET_KEY'] = 'szalony kod'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///baza.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-
 dataBase.init_app(app)
-# login_manager = LoginManager()
-# login_manager.init_app(app)
-
-# login_manager.login_view = "users.login"
-'''
-@login_manager.user_loader
-def load_user(user_id):
-    return User.query.filter(User.id == int(user_id)).first()
-
-'''
 
 
 # strona główna z wypisem ogrganiczonych wpisów
 @app.route('/')
 def welcome():
     conn = dataBaseConn()
-    data = conn.execute('SELECT * FROM wpis LIMIT 3').fetchall()  # wypisanie 3 wpisów
+    data = conn.execute('SELECT * FROM wpis LIMIT 3 ').fetchall()  # wypisanie 3 wpisów
     # trzeba zmienić na najnowsze, że by się wyświetlały
     conn.close()
     return render_template('mainpage.html', data=data)
@@ -50,7 +43,7 @@ def register():
 
         dataBase.session.add(newUser)  # dodanie nowego użytkownika
         dataBase.session.commit()  # potwierdzenie zmian
-        # login_user(user)
+
         flash('Account has been creates! Log in!')
 
         return redirect(url_for('login'))
@@ -69,7 +62,8 @@ def login():
         user = User.query.filter_by(login=login)  # szukanie loginu w bazie
 
         if user is not None and password:  # warunek jak znajdziemy login
-            # login_user(user)
+            session['logged_in'] = True
+            # session['user_id'] = user.user_id
             return redirect(url_for('my'))  # login jest to przekierowanie na stronę
         else:
             flash('Try again!')
@@ -81,6 +75,9 @@ def login():
 # strona użytkownika ze wszystkimi wpisami innych użytkowników
 @app.route('/mypage')
 def my():
+    if not session.get('logged_in'):
+        return redirect(url_for('login'))
+
     conn = dataBaseConn()
     data = conn.execute('SELECT * FROM wpis').fetchall()  # wypisanie wszystkich postów
     conn.close()
@@ -90,16 +87,22 @@ def my():
 # wylogowanie użytkownika
 @app.route('/logout')
 def logout():
-    # logout_user()
-    session.pop('logged_id', None)
-    flash('You are logout. See you soon!')
+    if not session.get('logged_in'):
+        return redirect(url_for('login'))
+    else:
+        session['logged_in'] = False
+        flash('You are logout. See you soon!')
     return redirect(url_for('welcome'))
 
 
 # strona do dodania nowej notatki
 @app.route('/new', methods=["GET", "POST"])
 def add():
+    if not session.get('logged_in'):  # jeśli osoba jest zaloogowana może dodać nowy post, jeśli nie to logowanie
+        return redirect(url_for('login'))
+
     if request.method == 'POST':
+
         tytul = request.form['title']
         tresc = request.form['content']
         data = datetime.date.today()
@@ -107,13 +110,26 @@ def add():
         if not tytul:
             flash('Tytuł jest obowiązkowy!')  # warunek na swtorzenie nowego wpisu
         else:
-            newPost = BlogSfera(tytul=tytul, data=data, tresc=tresc)  # tworzenie nowego wpisu
-            dataBase.session.add(newPost)  # dodanie nowego wpisu do bazy
-            dataBase.session.commit()  # potwierdzenie zmian
+            # !!!UWAGA!!! tworzenie nowego wpisu -> z ręki wpisane ID
+            newPost = BlogSfera(tytul=tytul, data=data, tresc=tresc, user_id=1)  # tworzenie nowego wpisu
+            dataBase.session_b.add(newPost)  # dodanie nowego wpisu do bazy
+            dataBase.session_b.commit()  # potwierdzenie zmian
             flash('Post was created!')
-            return redirect(url_for('welcome'))
+            return redirect(url_for('my'))
 
     return render_template('new.html')
+
+# usuwanie wpisu
+@app.route('/delete/<int:id>', methods=["GET"])
+def delete(id):
+    if not session.get('logged_in'):  # jeśli osoba jest zaloogowana może dodać nowy post, jeśli nie to logowanie
+        return redirect(url_for('login'))
+
+    conn = dataBaseConn()
+    conn.execute('DELETE FROM wpis WHERE wpis_id=? ', (id,))
+    conn.commit()
+    conn.close()
+    return redirect(url_for('my'))
 
 
 # funkcja do połączenia z bazą

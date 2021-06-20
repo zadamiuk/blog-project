@@ -10,9 +10,9 @@ with sqlite3.connect('baza.db') as connection:
     c.execute('INSERT INTO user VALUES (3,"Asia","asia123")')
 
     c.execute("CREATE TABLE wpis(wpis_id INTEGER PRIMARY KEY AUTOINCREMENT,"
-              "tytul TEXT NOT NULL, data DATE NOT NULL, tresc TEXT NOT NULL)")
-              #"login_id INTEGER  NOT NULL REFERENCES bloger)")
-    c.execute('INSERT INTO wpis VALUES(1, "Sprawdzenie", "19/06/2021", "zabawa na całego")')
-    c.execute('INSERT INTO wpis VALUES(2, "Sprawdzenie vol.2", "19/06/2021", "zabawa na całego hehe")')
-    c.execute('INSERT INTO wpis VALUES(3, "Sprawdzenie vol.3", "19/06/2021", "zabawa na całego hehe2")')
+              "tytul TEXT NOT NULL, data DATE NOT NULL, tresc TEXT NOT NULL,"
+              "user_id INTEGER NOT NULL REFERENCES user)")
+    c.execute('INSERT INTO wpis VALUES(1, "Sprawdzenie", "19/06/2021", "zabawa na całego",1)')
+    c.execute('INSERT INTO wpis VALUES(2, "Sprawdzenie vol.2", "19/06/2021", "zabawa na całego hehe",2)')
+    c.execute('INSERT INTO wpis VALUES(3, "Sprawdzenie vol.3", "19/06/2021", "zabawa na całego hehe2",3)')
 
