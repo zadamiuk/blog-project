@@ -34,7 +34,7 @@ def register():
         login = request.form['login']
         password = request.form['password']
 
-        user = User.query.filter_by(login=login)  # sprawdzenie czy taki login istenieje
+        user = User.query.filter_by(login=login).first()  # sprawdzenie czy taki login istenieje
         if user:
             flash('You try again!')
             return redirect(url_for('register'))
@@ -111,7 +111,6 @@ def add():
         if not tytul:
             flash('Tytuł jest obowiązkowy!')  # warunek na swtorzenie nowego wpisu
         else:
-            # !!!UWAGA!!! tworzenie nowego wpisu -> z ręki wpisane ID
             newPost = BlogSfera(tytul=tytul, data=data, tresc=tresc, user_id=user_id)  # tworzenie nowego wpisu
             dataBase.session.add(newPost)  # dodanie nowego wpisu do bazy
             dataBase.session.commit()  # potwierdzenie zmian
