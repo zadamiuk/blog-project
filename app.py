@@ -1,174 +1,111 @@
 # https://www.youtube.com/playlist?list=PLLjmbh6XPGK4ISY747FUHXEl9lBxre4mM
 # na podstawie tego coś tam sobie pisałam
-
-
+import datetime
 import sqlite3
-import SQLAlchemy as SQLAlchemy
 
-from flask import Flask, render_template, request, redirect, url_for, session, flash
-from functools import wraps
+import bcrypt
 
-from models import User
+from flask import Flask, render_template, request, flash, redirect, url_for
+from models import User, BlogSfera, dataBase
 
-# stworzenie obiektu aplikacji
 app = Flask(__name__)
 
 app.config['SECRET_KEY'] = 'szalony kod'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///baza.db'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-
-db = SQLAlchemy(app)
-db.create_all()
-db.session.commit()
-
-
-# autoryzacja/ uwierzytelnienie
-def login_required(f):
-    @wraps(f)
-    def wrap(*args, **kwargs):
-        if 'logged_in' in session:
-            return f(*args, **kwargs)
-        else:
-            flash('You need to login first.')
-            return redirect(url_for('login'))
-
-    return wrap
-
-
-# strona główna
+dataBase.init_app(app)
+# strona główna z wypisem ogrganiczonych wpisów
 @app.route('/')
 def welcome():
-    conn = sqlite3.connect("baza.db")
-    cursor = conn.cursor()
-
-    query = "SELECT * FROM wpis LIMIT 3"
-    cursor.execute(query)
-    data = cursor.fetchall()
-    conn.commit()
+    conn = dataBaseConn()
+    data = conn.execute('SELECT * FROM wpis LIMIT 3').fetchall()
     conn.close()
-
     return render_template('mainpage.html', data=data)
 
 
-# możliwość dodania nowego wpisu
-@app.route('/add', methods=["GET"])
-def add():
-    try:
-        conn = sqlite3.connect("baza.db")
-        cursor = conn.cursor()
+# strona do rejestracji nowego użytkownika
+@app.route('/register', methods=["GET", "POST"])
+def register():
+    if request.method == 'POST':
+        login = request.form['login']
+        password = request.form['password']
+        print(password)
+        password_hash = bcrypt.gensalt(password)
 
-        query = "SELECT * FROM wpis"
-        cursor.execute(query, )
-        data = cursor.fetchall()
-        conn.commit()
+        user = User.query.filter_by(login=login).first()
+        if user:
+            flash('You try again!')
+            return redirect(url_for(register))
 
-        return render_template('new.html', data=data)
-    except Exception as err:
-        return "Error!" + str(err), 500
+        newUser = User(login=login, password=password_hash)
 
+        dataBase.session.add(newUser)
+        dataBase.session.commit()
+        flash('Account has been creates! Log in!')
 
-@app.route('/add', methods=["POST"])
-def add_db():
-    try:
-        #mautor = request.form["autor"]
-        mtytul = request.form["tytul"]
-        mdata = request.form["data"]
-        mtresc = request.form["tresc"]
+        return redirect(url_for('login'))
 
-        conn = sqlite3.connect("baza.db")
-        cursor = conn.cursor()
-
-        query = "INSERT INTO wpis(tytul, data, tresc) VALUES(?,?,?,?)"
-        cursor.execute(query, (mtytul, mdata, mtresc))
-        conn.commit()
-        conn.close()
-
-        return redirect(url_for(welcome))
-    except Exception as err:
-        return "Error!" + str(err), 500
-
-
-# możliwość edycji wybranego postu
-@app.route('/edit/<int:id>', methods=["GET"])
-def edit(id):
-    try:
-        conn = sqlite3.connect("baza.db")
-        cursor = conn.cursor()
-
-        query = "SELECT * FROM wpis WHERE id =?"
-        cursor.execute(query, (id,))
-        data = cursor.fetchall()
-        conn.commit()
-        conn.close()
-
-        return render_template('modify.html', data=data[0])
-    except Exception as err:
-        return "Error!" + str(err), 500
-
-
-@app.route('/edit', methods=["POST"])
-def edit_db():
-    try:
-        mtresc = request.form['tresc']
-
-        conn = sqlite3.connect('baza.db')
-        cursor = conn.cursor()
-
-        query = "UPDATE wpis SET tresc=?"
-        cursor.execute(query, mtresc)
-        conn.commit()
-        conn.close()
-
-        return redirect(url_for(welcome))
-    except Exception as err:
-        return "Error!" + str(err), 500
-
-
-# możliwość usunięcia - bez metody POST, żeby od razu z ikonki można było usunąć
-@app.route('/delete/<int:id>', methods=["GET"])
-def delete(id):
-    try:
-        conn = sqlite3.connect('baza.db')
-        cursor = conn.cursor()
-
-        query = "DELETE FROM wpis WHERE id=?"
-        cursor.execute(query, (id,))
-        conn.commit()
-        conn.close()
-
-        return redirect(url_for('welcome'))
-    except Exception as err:
-        return "Error!" + str(err), 500
+    return render_template('register.html')
 
 
 # strona do logowania
-@app.route('/login', methods=['GET', 'POST'])
+@app.route('/login', methods=["GET", "POST"])
 def login():
-    error = None
     if request.method == 'POST':
+        login = request.form['login']
+        password = request.form['password']
 
-        # na razie zrobione wg tutorialu trzeb będzię połączyć się z baza aby wyszukiwało
-        # użytkowników
-        if request.form['username'] != 'admin' or request.form['password'] != 'admin':
-            error = 'Error! Please try again!'
+        user = User.query.filter_by(login=login).first()
+
+        if user and bcrypt.checkpw(user.password, password):
+            return redirect(url_for('/mypage'))
         else:
-            session['logged_id'] = True
-            flash('You are login!')
-            return redirect(url_for('welcome'))
-    return render_template("login.html", error=error)
+            flash('Try again!')
+            return redirect(url_for('login'))
+
+    return render_template('login.html')
 
 
-# wylogowanie
+# strona użytkownika ze wszystkimi wpisami innych użytkowników
+@app.route('/mypage')
+def my():
+    return render_template('mypage.html')
+
+
+# wylogowanie użytkownika
 @app.route('/logout')
-@login_required
 def logout():
-    session.pop('logged_id', None)
     flash('You are logout. See you soon!')
     return redirect(url_for('welcome'))
 
 
+# strona do dodania nowej notatki
+@app.route('/new', methods=["GET", "POST"])
+def add():
+    if request.method == 'POST':
+        tytul = request.form['title']
+        tresc = request.form['content']
+        data = datetime.date.today()
+
+        if not tytul:
+            flash('Tytuł jest obowiązkowy!')
+        else:
+            newPost = BlogSfera(tytul=tytul, data=data, tresc=tresc)
+            dataBase.session.add(newPost)
+            dataBase.session.commit()
+            flash('Post was created!')
+            return redirect(url_for('welcome'))
+
+    return render_template('new.html')
 
 
-# start aplikacji wywołane metodą 'run()'
+def dataBaseConn():
+    conn = sqlite3.connect('baza.db')
+    conn.row_factory = sqlite3.Row
+    return conn
+
+
+# uruchomienie aplikacji
 if __name__ == '__main__':
     app.run(debug=True)
