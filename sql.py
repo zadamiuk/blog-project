@@ -3,11 +3,11 @@ import sqlite3
 
 with sqlite3.connect('baza.db') as connection:
     c = connection.cursor()
-    c.execute("CREATE TABLE bloger(bloger_id INTEGER PRIMARY KEY AUTOINCREMENT,"
+    c.execute("CREATE TABLE user(user_id INTEGER PRIMARY KEY AUTOINCREMENT,"
               "login TEXT, password TEXT)")
-    c.execute('INSERT INTO bloger VALUES (1,"Ola","ola123")')
-    c.execute('INSERT INTO bloger VALUES (2,"Zuza","zuza123")')
-    c.execute('INSERT INTO bloger VALUES (3,"Asia","asia123")')
+    c.execute('INSERT INTO user VALUES (1,"Ola","ola123")')
+    c.execute('INSERT INTO user VALUES (2,"Zuza","zuza123")')
+    c.execute('INSERT INTO user VALUES (3,"Asia","asia123")')
 
     c.execute("CREATE TABLE wpis(wpis_id INTEGER PRIMARY KEY AUTOINCREMENT,"
               "tytul TEXT NOT NULL, data DATE NOT NULL, tresc TEXT NOT NULL)")

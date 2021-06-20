@@ -1,11 +1,8 @@
-# https://www.youtube.com/playlist?list=PLLjmbh6XPGK4ISY747FUHXEl9lBxre4mM
-# na podstawie tego coś tam sobie pisałam
 import datetime
 import sqlite3
+from functools import wraps
 
-import bcrypt
-
-from flask import Flask, render_template, request, flash, redirect, url_for
+from flask import Flask, render_template, request, flash, redirect, url_for, session
 from models import User, BlogSfera, dataBase
 
 app = Flask(__name__)
@@ -15,6 +12,20 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///baza.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 dataBase.init_app(app)
+
+
+def login_required(f):
+    @wraps(f)
+    def wrap(*args, **kwargs):
+        if 'logged_in' in session:
+            return f(*args, **kwargs)
+        else:
+            flash('You need to login first.')
+            return redirect(url_for('login'))
+
+    return wrap
+
+
 # strona główna z wypisem ogrganiczonych wpisów
 @app.route('/')
 def welcome():
@@ -30,15 +41,13 @@ def register():
     if request.method == 'POST':
         login = request.form['login']
         password = request.form['password']
-        print(password)
-        password_hash = bcrypt.gensalt(password)
 
-        user = User.query.filter_by(login=login).first()
+        user = User.query.filter_by(login=login)
         if user:
             flash('You try again!')
-            return redirect(url_for(register))
+            return redirect(url_for('register'))
 
-        newUser = User(login=login, password=password_hash)
+        newUser = User(login=login, password=password)
 
         dataBase.session.add(newUser)
         dataBase.session.commit()
@@ -56,10 +65,10 @@ def login():
         login = request.form['login']
         password = request.form['password']
 
-        user = User.query.filter_by(login=login).first()
+        user = User.query.filter_by(login=login)
 
-        if user and bcrypt.checkpw(user.password, password):
-            return redirect(url_for('/mypage'))
+        if user and password:
+            return redirect(url_for('my'))
         else:
             flash('Try again!')
             return redirect(url_for('login'))
@@ -75,13 +84,16 @@ def my():
 
 # wylogowanie użytkownika
 @app.route('/logout')
+@login_required
 def logout():
+    session.pop('logged_id', None)
     flash('You are logout. See you soon!')
     return redirect(url_for('welcome'))
 
 
 # strona do dodania nowej notatki
 @app.route('/new', methods=["GET", "POST"])
+@login_required
 def add():
     if request.method == 'POST':
         tytul = request.form['title']

@@ -5,7 +5,7 @@ dataBase = SQLAlchemy()
 
 
 class User(dataBase.Model):
-    __tablename__ = "bloger"
+    __tablename__ = "user"
 
     id = dataBase.Column(dataBase.Integer, primary_key=True)
     login = dataBase.Column(dataBase.String, nullable=False)
