@@ -8,6 +8,7 @@ with sqlite3.connect('baza.db') as connection:
     c.execute('INSERT INTO user VALUES (1,"Ola","ola123")')
     c.execute('INSERT INTO user VALUES (2,"Zuza","zuza123")')
     c.execute('INSERT INTO user VALUES (3,"Asia","asia123")')
+    #wszystkie hasla powinny byc hashowane, wiec nasze tez, ale to na potem
 
     c.execute("CREATE TABLE wpis(id INTEGER PRIMARY KEY AUTOINCREMENT,"
               "tytul TEXT NOT NULL, data DATE NOT NULL, tresc TEXT NOT NULL,"
