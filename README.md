@@ -2,10 +2,10 @@
 
 ## Przygotowanie aplikacji:
 
-npm install Flask 
-npm install sqlite3 
+npm install Flask   
+npm install sqlite3   
 
 ### Instalacja bibliotek
-SQLAlchemy 
-flask_sqlalchemy
-bcrypt 
+SQLAlchemy  
+flask_sqlalchemy  
+bcrypt  
