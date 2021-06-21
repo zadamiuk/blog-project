@@ -1,6 +1,10 @@
 # dodanie odpowiednich bibliotek
 import datetime
 import sqlite3
+import hashlib
+import os
+import bcrypt
+
 
 from flask import Flask, render_template, request, flash, redirect, url_for, session
 from sqlalchemy import desc
@@ -34,17 +38,21 @@ def register():
         login = request.form['login']
         password = request.form['password']
 
-        user = User.query.filter_by(login=login).first()  # sprawdzenie czy taki login istenieje
+        user = User.query.filter_by(login=login).first()  # sprawdzenie, czy taki login istenieje
         if user:
-            flash('You try again!')
+            flash('Please try again!')
             return redirect(url_for('register'))
+
+        # hashowanie hasła
+        password=bcrypt.hashpw(password.encode('utf8'), bcrypt.gensalt(16)) #salt zapisywana w hasle
+
 
         newUser = User(login=login, password=password)  # tworzenie nowego użytkownika
 
         dataBase.session.add(newUser)  # dodanie nowego użytkownika
         dataBase.session.commit()  # potwierdzenie zmian
 
-        flash('Account has been creates! Log in!')
+        flash('Account has been created! Log in!')
 
         return redirect(url_for('login'))
 
@@ -61,10 +69,22 @@ def login():
 
         user = User.query.filter_by(login=login).first()  # szukanie loginu w bazie
 
-        if user is not None and password:  # warunek jak znajdziemy login
-            session['logged_in'] = True
-            session['user_id'] = user.id
-            return redirect(url_for('my'))  # login jest to przekierowanie na stronę
+        # if user is not None and password:  # warunek jak znajdziemy login
+        #     session['logged_in'] = True
+        #     session['user_id'] = user.id
+        #     return redirect(url_for('my'))  # login jest to przekierowanie na stronę
+
+        if user is not None:  # warunek jak znajdziemy login
+            hashed_password = user.password
+
+            if bcrypt.checkpw(password.encode('utf8'), hashed_password):
+                session['logged_in'] = True
+                session['user_id'] = user.id
+                return redirect(url_for('my'))  # login jest to przekierowanie na stronę
+            else:
+                flash('Try again!')
+                return redirect(url_for('login'))  # login błędny powrót na login
+
         else:
             flash('Try again!')
             return redirect(url_for('login'))  # login błędny powrót na login

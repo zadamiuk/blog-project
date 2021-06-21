@@ -1,4 +1,4 @@
-from flask_sqlalchemy import SQLAlchemy  # SQLAlchemy umożliwia nie pisanie trudnych zapytań SQL
+from flask_sqlalchemy import SQLAlchemy  # SQLAlchemy umożliwia niepisanie trudnych zapytań SQL
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship
 
@@ -17,7 +17,8 @@ class User(dataBase.Model):
 
     def __init__(self, login, password):
         self.login = login
-        self.password = bcrypt.genetrate_password_hash(password)
+        # self.password = bcrypt.genetrate_password_hash(password)
+        self.password = password
 
     def __repr__(self):
         return '<login{}'.format(self.login)
