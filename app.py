@@ -1,8 +1,6 @@
 # dodanie odpowiednich bibliotek
 import datetime
 import sqlite3
-import hashlib
-import os
 import bcrypt
 
 
