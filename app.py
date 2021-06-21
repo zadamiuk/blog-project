@@ -3,6 +3,7 @@ import datetime
 import sqlite3
 
 from flask import Flask, render_template, request, flash, redirect, url_for, session
+from sqlalchemy import desc
 
 from models import User, BlogSfera, dataBase
 
@@ -13,16 +14,16 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = 'szalony kod'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///baza.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
 dataBase.init_app(app)
 
 
 # strona główna z wypisem ogrganiczonych wpisów
 @app.route('/')
 def welcome():
-    conn = dataBaseConn()
-    data = conn.execute('SELECT * FROM wpis LIMIT 3 ').fetchall()  # wypisanie 3 wpisów
-    # trzeba zmienić na najnowsze, że by się wyświetlały
-    conn.close()
+
+    data = BlogSfera.query.order_by(desc(BlogSfera.id)).limit(3).all() #wyświetlanie najnowszych wpisów na stronie głównej
+
     return render_template('mainpage.html', data=data)
 
 
@@ -125,10 +126,9 @@ def delete(id):
     if not session.get('logged_in'):  # jeśli osoba jest zaloogowana może dodać nowy post, jeśli nie to logowanie
         return redirect(url_for('login'))
 
-    conn = dataBaseConn()
-    conn.execute('DELETE FROM wpis WHERE id=? ', (id,))
-    conn.commit()
-    conn.close()
+    wpis = BlogSfera.query.filter_by(id=id).delete()
+    dataBase.session.commit()
+
     return redirect(url_for('my'))
 
 

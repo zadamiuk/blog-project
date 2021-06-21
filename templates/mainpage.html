@@ -5,10 +5,10 @@
 </head>
 <body>
     {% if data %}
-        {% for row in data %}
-            <h2> {{ row[1] }}</h2>
-            <p> By {{ row[0] }} on {{ row[2] }}</p>
-            <p> {{ row[3] }}</p>
+        {% for wpis in data %}
+            <h2> <a href="/delete/{{wpis.id}}"> {{wpis.tytul}}</a> </h2>
+            <p> By {{ wpis.user_id }} on {{ wpis.data }}</p>
+            <p> {{ wpis.tresc }}</p>
         {% endfor %}
     {% else %}
         <h2> brak </h2>
