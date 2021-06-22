@@ -12,12 +12,11 @@ from models import User, BlogSfera, dataBase
 app = Flask(__name__)
 
 # konfiguracja aplikacji
-app.config['SECRET_KEY'] = 'szalony kod'
+app.config['SECRET_KEY'] = 'kod'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///baza.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 dataBase.init_app(app)
-
 
 # strona główna z wypisem ogrganiczonych wpisów
 @app.route('/')
@@ -34,6 +33,9 @@ def register():
     if request.method == 'POST':
         login = request.form['login']
         password = request.form['password']
+        if not login or not password:
+            flash('Please fill in all the boxes!')
+            return redirect(url_for('register'))
 
         user = User.query.filter_by(login=login).first()  # sprawdzenie, czy taki login istenieje
         if user:
@@ -49,7 +51,6 @@ def register():
         dataBase.session.commit()  # potwierdzenie zmian
 
         flash('Account has been created! Log in!')
-
         return redirect(url_for('login'))
 
     return render_template('register.html')
@@ -62,6 +63,9 @@ def login():
 
         login = request.form['login']
         password = request.form['password']
+        if not login or not password:
+            flash('Please fill in all the boxes!')
+            return redirect(url_for('login'))
 
         user = User.query.filter_by(login=login).first()  # szukanie loginu w bazie
 
@@ -102,7 +106,7 @@ def logout():
     else:
         session.pop('user_id', None)
         session['logged_in'] = False
-        flash('You are logout. See you soon!')
+        flash('You are logged out. See you soon!')
     return redirect(url_for('welcome'))
 
 
@@ -119,8 +123,9 @@ def add():
         data = datetime.date.today()
         user_id = session["user_id"]
 
-        if not tytul:
-            flash('Tytuł jest obowiązkowy!')  # warunek na swtorzenie nowego wpisu
+        if not tytul or not tresc:
+            flash('Please fill in all the boxes!')  # warunek na swtorzenie nowego wpisu
+            return redirect(url_for('my'))
         else:
             newPost = BlogSfera(tytul=tytul, data=data, tresc=tresc, user_id=user_id)  # tworzenie nowego wpisu
             dataBase.session.add(newPost)  # dodanie nowego wpisu do bazy
@@ -134,6 +139,7 @@ def add():
 @app.route('/modify/<int:id>', methods=["GET", "POST"])
 def modify(id):
     if not session.get('logged_in'):  # jeśli osoba jest zaloogowana może dodać nowy post, jeśli nie to logowanie
+        flash('Please login first')
         return redirect(url_for('login'))
 
     updatePost = BlogSfera.query.filter_by(id=id).first() #znalezienie w bazie modyfikowanego rekordu
