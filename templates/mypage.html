@@ -7,7 +7,7 @@
         {% for wpis in data %}
             <h2> <a href="/delete/{{wpis.id}}"> {{wpis.tytul}}</a> </h2>
             <p> By {{ wpis.user_id }} on {{ wpis.data }}</p>
-            <p> {{ wpis.tresc }}</p>
+            <p> <a href="/modify/{{wpis.id}}"> {{ wpis.tresc }} </a> </p>
         {% endfor %}
     {% else %}
         <h2> brak </h2>

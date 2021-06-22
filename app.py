@@ -3,7 +3,6 @@ import datetime
 import sqlite3
 import bcrypt
 
-
 from flask import Flask, render_template, request, flash, redirect, url_for, session
 from sqlalchemy import desc
 
@@ -23,8 +22,8 @@ dataBase.init_app(app)
 # strona główna z wypisem ogrganiczonych wpisów
 @app.route('/')
 def welcome():
-
-    data = BlogSfera.query.order_by(desc(BlogSfera.id)).limit(3).all() #wyświetlanie najnowszych wpisów na stronie głównej
+    data = BlogSfera.query.order_by(desc(BlogSfera.id)).limit(
+        3).all()  # wyświetlanie najnowszych wpisów na stronie głównej
 
     return render_template('mainpage.html', data=data)
 
@@ -42,8 +41,7 @@ def register():
             return redirect(url_for('register'))
 
         # hashowanie hasła
-        password=bcrypt.hashpw(password.encode('utf8'), bcrypt.gensalt(16)) #salt zapisywana w hasle
-
+        password = bcrypt.hashpw(password.encode('utf8'), bcrypt.gensalt(16))  # salt zapisywana w hasle
 
         newUser = User(login=login, password=password)  # tworzenie nowego użytkownika
 
@@ -66,11 +64,6 @@ def login():
         password = request.form['password']
 
         user = User.query.filter_by(login=login).first()  # szukanie loginu w bazie
-
-        # if user is not None and password:  # warunek jak znajdziemy login
-        #     session['logged_in'] = True
-        #     session['user_id'] = user.id
-        #     return redirect(url_for('my'))  # login jest to przekierowanie na stronę
 
         if user is not None:  # warunek jak znajdziemy login
             hashed_password = user.password
@@ -136,6 +129,29 @@ def add():
             return redirect(url_for('my'))
 
     return render_template('new.html')
+
+
+@app.route('/modify/<int:id>', methods=["GET", "POST"])
+def modify(id):
+    if not session.get('logged_in'):  # jeśli osoba jest zaloogowana może dodać nowy post, jeśli nie to logowanie
+        return redirect(url_for('login'))
+
+    updatePost = BlogSfera.query.filter_by(id=id).first() #znalezienie w bazie modyfikowanego rekordu
+
+    if request.method == 'POST':
+
+        updatePost.tytul = request.form['title']    #pobranie nowych informacji
+        updatePost.tresc = request.form['content']
+        updatePost.data = datetime.date.today()
+        try:
+            dataBase.session.commit() #zatwierdzenie nowych treści
+            flash('Post was updated!')
+            return redirect(url_for('my'))
+        except:
+            flash("Error!  Looks like there was a problem...try again!")
+            return render_template("modify.html", updatePost=updatePost)
+    else:
+        return render_template('modify.html', updatePost=updatePost)
 
 
 # usuwanie wpisu
