@@ -12,8 +12,8 @@ with sqlite3.connect('baza.db') as connection:
 
     c.execute("CREATE TABLE wpis(id INTEGER PRIMARY KEY AUTOINCREMENT,"
               "tytul TEXT NOT NULL, data DATE NOT NULL, tresc TEXT NOT NULL,"
-              "user_id INTEGER NOT NULL REFERENCES user)")
-    c.execute('INSERT INTO wpis VALUES(1, "Sprawdzenie", "2019-06-20", "zabawa na całego",1)')
-    c.execute('INSERT INTO wpis VALUES(2, "Sprawdzenie vol.2", "2019-06-20", "zabawa na całego hehe",2)')
-    c.execute('INSERT INTO wpis VALUES(3, "Sprawdzenie vol.3", "2019-06-20", "zabawa na całego hehe2",3)')
+              "user_id INTEGER NOT NULL REFERENCES user, autor TEXT NOT NULL)")
+    c.execute('INSERT INTO wpis VALUES(1, "Wspomnienie z wakacji", "2019-06-20", "Hiszpania jest piękna",1,"Ola")')
+    c.execute('INSERT INTO wpis VALUES(2, "Koncert w Warszawie", "2019-06-20", "Na koncercie wystąpił Mata",2,"Zuza")')
+    c.execute('INSERT INTO wpis VALUES(3, "3 koktajle na lato", "2019-06-20", "Potrzebujemy 4 składników",3,"Asia")')
 

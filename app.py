@@ -137,12 +137,14 @@ def add():
         tresc = request.form['content']
         data = datetime.date.today()
         user_id = session["user_id"]
+        user = User.query.filter_by(id=user_id).first()
+        login=user.login
 
         if not tytul or not tresc:
             flash('Wypełnij wszystkie pola')  # warunek na swtorzenie nowego wpisu
             return redirect(url_for('my'))
         else:
-            newPost = BlogSfera(tytul=tytul, data=data, tresc=tresc, user_id=user_id)  # tworzenie nowego wpisu
+            newPost = BlogSfera(tytul=tytul, data=data, tresc=tresc, user_id=user_id, autor=login)  # tworzenie nowego wpisu
             dataBase.session.add(newPost)  # dodanie nowego wpisu do bazy
             dataBase.session.commit()  # potwierdzenie zmian
             flash('Post został opublikowany')

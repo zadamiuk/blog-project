@@ -31,14 +31,17 @@ class BlogSfera(dataBase.Model):
     tytul = dataBase.Column(dataBase.String, nullable=False)
     data = dataBase.Column(dataBase.Date, nullable=False)
     tresc = dataBase.Column(dataBase.String, nullable=False)
+    autor = dataBase.Column(dataBase.String, nullable=False)
+
 
     user_id = dataBase.Column(dataBase.Integer, ForeignKey('user.id'), nullable=False)  # związek między wpisem a user
 
-    def __init__(self, tytul, data, tresc, user_id):
+    def __init__(self, tytul, data, tresc, user_id, autor):
         self.tytul = tytul
         self.data = data
         self.tresc = tresc
         self.user_id = user_id
+        self.autor = autor
 
     def __repr__(self):
         return '<tytyl{}'.format(self.tytul)
