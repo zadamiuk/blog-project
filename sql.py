@@ -8,12 +8,12 @@ with sqlite3.connect('baza.db') as connection:
     c.execute('INSERT INTO user VALUES (1,"Ola","ola123")')
     c.execute('INSERT INTO user VALUES (2,"Zuza","zuza123")')
     c.execute('INSERT INTO user VALUES (3,"Asia","asia123")')
-    #wszystkie hasla powinny byc hashowane, wiec nasze tez, ale to na potem
+
 
     c.execute("CREATE TABLE wpis(id INTEGER PRIMARY KEY AUTOINCREMENT,"
               "tytul TEXT NOT NULL, data DATE NOT NULL, tresc TEXT NOT NULL,"
               "user_id INTEGER NOT NULL REFERENCES user, autor TEXT NOT NULL)")
-    c.execute('INSERT INTO wpis VALUES(1, "Wspomnienie z wakacji", "2019-06-20", "Hiszpania jest piękna",1,"Ola")')
-    c.execute('INSERT INTO wpis VALUES(2, "Koncert w Warszawie", "2019-06-20", "Na koncercie wystąpił Mata",2,"Zuza")')
-    c.execute('INSERT INTO wpis VALUES(3, "3 koktajle na lato", "2019-06-20", "Potrzebujemy 4 składników",3,"Asia")')
+    c.execute('INSERT INTO wpis VALUES(1, "Wspomnienie z wakacji", "2019-07-25", "Hiszpania jest piękna",1,"Ola")')
+    c.execute('INSERT INTO wpis VALUES(2, "Koncert w Warszawie", "2019-05-18", "Na koncercie wystąpił Mata",2,"Zuza")')
+    c.execute('INSERT INTO wpis VALUES(3, "3 koktajle na lato", "2021-06-20", "Potrzebujemy 4 składników",3,"Asia")')
 

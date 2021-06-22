@@ -23,7 +23,7 @@ app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=1)  # czas sesji to
 dataBase.init_app(app)
 
 
-# strona główna z wypisem ogrganiczonych wpisów
+# strona główna z wypisem kilku wpisów
 @app.route('/')
 def welcome():
     data = BlogSfera.query.order_by(desc(BlogSfera.id)).limit(3).all()  # wyświetlanie najnowszych wpisów na stronie głównej
@@ -82,11 +82,11 @@ def login():
                 return redirect(url_for('my'))  # login jest to przekierowanie na stronę
             else:
                 flash('Błąd, spróbuj ponownie')
-                return redirect(url_for('login'))  # login błędny powrót na login
+                return redirect(url_for('login'))
 
         else:
             flash('Błąd, spróbuj ponownie')
-            return redirect(url_for('login'))  # login błędny powrót na login
+            return redirect(url_for('login'))
 
     return render_template('login.html')
 
@@ -99,8 +99,7 @@ def my():
 
     user = session['user_id']
 
-    data = BlogSfera.query.filter_by(user_id=user).all()
-
+    data = BlogSfera.query.filter_by(user_id=user).order_by(desc(BlogSfera.data)).all()
     return render_template('mypage.html', data=data)
 
 
@@ -109,7 +108,7 @@ def all():
     if not session.get('logged_in'):
         return redirect(url_for('login'))
 
-    data = BlogSfera.query.all()
+    data = BlogSfera.query.order_by(desc(BlogSfera.data)).all()
 
     return render_template('all.html', data=data)
 
@@ -155,7 +154,7 @@ def add():
 
 @app.route('/modify/<int:id>', methods=["GET", "POST"])
 def modify(id):
-    if not session.get('logged_in'):  # jeśli osoba jest zaloogowana może dodać nowy post, jeśli nie to logowanie
+    if not session.get('logged_in'):  # jeśli osoba jest zalogowana może dodać nowy post, jeśli nie to logowanie
         flash('Proszę, zaloguj się')
         return redirect(url_for('login'))
 
@@ -186,7 +185,7 @@ def modify(id):
 # usuwanie wpisu
 @app.route('/delete/<int:id>', methods=["GET"])
 def delete(id):
-    if not session.get('logged_in'):  # jeśli osoba jest zaloogowana może dodać nowy post, jeśli nie to logowanie
+    if not session.get('logged_in'):  # jeśli osoba jest zalogowana może dodać nowy post, jeśli nie to logowanie
         return redirect(url_for('login'))
 
     wpis = BlogSfera.query.filter_by(id=id).first()
