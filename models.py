@@ -5,7 +5,7 @@ from sqlalchemy.orm import relationship
 dataBase = SQLAlchemy()
 
 
-# model użytkonika
+# model użytkownika
 class User(dataBase.Model):
     __tablename__ = "user"
 
@@ -17,7 +17,6 @@ class User(dataBase.Model):
 
     def __init__(self, login, password):
         self.login = login
-        # self.password = bcrypt.genetrate_password_hash(password)
         self.password = password
 
     def __repr__(self):
