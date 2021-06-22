@@ -177,11 +177,15 @@ def modify(id):
 def delete(id):
     if not session.get('logged_in'):  # jeśli osoba jest zaloogowana może dodać nowy post, jeśli nie to logowanie
         return redirect(url_for('login'))
+    wpis = BlogSfera.query.filter_by(id=id).first()
+    if not wpis.user_id == session["user_id"]:
+        flash('This is not your post')
+        return redirect(url_for('my'))
+    else:
+        BlogSfera.query.filter_by(id=id).delete()
+        dataBase.session.commit()
 
-    wpis = BlogSfera.query.filter_by(id=id).delete()
-    dataBase.session.commit()
-
-    return redirect(url_for('my'))
+        return redirect(url_for('my'))
 
 
 # funkcja do połączenia z bazą
