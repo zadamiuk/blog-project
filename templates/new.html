@@ -1,35 +1,41 @@
- <head>
-  <!--  flash messages for html -->
-    <style>
-      .alert-error {
-        padding: 8px;
-        background-color: darkorange;
-        color: white;
-      }
-    </style>
-      <!--  end of flash messages for html -->
-  </head>
-<!--  flash messages for html -->
-    {% for message in get_flashed_messages() %}
-      <div class="alert-error"> {{ message }}</div>
-    {% endfor %}
-<!-- end of flash messages for html -->
-<h1>{% block title %} Create a New Post {% endblock %}</h1>
-
-<form method="post">
-    <div class="form-group">
-        <label for="title">Title</label>
-        <input type="text" name="title"
-               placeholder="Post title" class="form-control"
-               value="{{ request.form['title'] }}"></input>
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="utf-8">
+    <title>Nowy post</title>
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/styles.css">
+</head>
+<body>
+    <div class="menu">
+        <a class="logout" href="{{url_for('logout')}}">Wyloguj</a>
+        <h1 id="menuLabel"><a href="/">BlogoSfera</a></h1>
+            <div class="navbar">
+                <a href="/all">Przeglądaj</a>
+                <a href="{{url_for('add')}}">Dodaj</a>
+                <a href="/mypage">Moje wpisy</a>
+            </div>
     </div>
 
-    <div class="form-group">
-        <label for="content">Content</label>
-        <textarea name="content" placeholder="Post content"
-                  class="form-control">{{ request.form['content'] }}</textarea>
+    <div class = "main">
+        <!--  flash messages for html -->
+        {% for message in get_flashed_messages() %}
+            <div class="alert-error"> {{ message }}</div>
+        {% endfor %}
+        <!-- end of flash messages for html -->
+        <div class="post">
+                <h3 id="new-post-header">Nowy post</h3>
+                <form class="new-post" method="post" id="new-post-form">
+                    <label>Tytuł</label>
+                    <input class="title-input" type="text" name="title" placeholder="Wprowadź tytuł">
+                    <label>Treść </label>
+                    <textarea class="post-input" name="content" form="new-post-form" placeholder="Wprowadź treść nowego posta"></textarea>
+                    <div class="button-holder">
+                        <button type="submit" class="btn-submit">Dodaj post</button>
+                    </div>
+                </form>
+        </div>
     </div>
-    <div class="form-group">
-        <button type="submit" class="btn btn-primary">Submit</button>
-    </div>
-</form>
+</body>
+

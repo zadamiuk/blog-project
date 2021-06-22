@@ -1,36 +1,39 @@
-<h1>{% block title %} Modify {% endblock %}</h1>
+<!DOCTYPE html>
+<html lang="pl">
 <head>
-  <!--  flash messages for html -->
-    <style>
-      .alert-error {
-        padding: 8px;
-        background-color: darkorange;
-        color: white;
-      }
-    </style>
-      <!--  end of flash messages for html -->
-  </head>
-<!--  flash messages for html -->
-    {% for message in get_flashed_messages() %}
-      <div class="alert-error"> {{ message }}</div>
-    {% endfor %}
-<!-- end of flash messages for html -->
-
-
-<form method="post">
-    <div class="form-group">
-        <label for="title">Title</label>
-        <input type="text" name="title"
-               placeholder="Post title" class="form-control"
-               value="{{ updatePost.tytul }}"></input>
+    <meta charset="utf-8">
+    <title>Modyfikowanie posta</title>
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/styles.css">
+</head>
+<body>
+    <div class="menu">
+            <a class="logout" href="{{url_for('logout')}}">Wyloguj</a>
+            <h1 id="menuLabel"><a href="/">BlogoSfera</a></h1>
+            <div class="navbar">
+                <a href="/all">Przeglądaj</a>
+                <a href="{{url_for('add')}}">Dodaj</a>
+                <a href="/mypage">Moje wpisy</a>
+            </div>
     </div>
-
-    <div class="form-group">
-        <label for="content">Content</label>
-        <textarea name="content" placeholder="Post content"
-                  class="form-control">{{ updatePost.tresc }}</textarea>
+    <div class = "main">
+        <!--  flash messages for html -->
+        {% for message in get_flashed_messages() %}
+          <div class="alert-error"> {{ message }}</div>
+        {% endfor %}
+        <!-- end of flash messages for html -->
+        <div class="post">
+                <h3 id="new-post-header">Modyfikuj post</h3>
+                <form class="new-post" method="post" id="new-post-form">
+                    <label>Tytul</label>
+                    <input class="title-input" type="text" name="title" value="{{ updatePost.tytul }}">
+                    <label>Tresc</label>
+                    <textarea class="post-input" name="content" form="new-post-form" >{{ updatePost.tresc }}</textarea>
+                    <div class="button-holder">
+                        <button type="submit" class="btn-submit">Zapisz zmiany</button>
+                    </div>
+                </form>
+        </div>
     </div>
-    <div class="form-group">
-        <button type="submit" class="btn btn-primary">Submit</button>
-    </div>
-</form>
+</body>

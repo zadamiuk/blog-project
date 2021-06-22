@@ -1,34 +1,51 @@
+<!DOCTYPE html>
+<html lang="pl">
 <head>
-  <!--  flash messages for html -->
-    <style>
-      .alert-error {
-        padding: 8px;
-        background-color: darkorange;
-        color: white;
-      }
-    </style>
-      <!--  end of flash messages for html -->
-  </head>
-<!--  flash messages for html -->
-    {% for message in get_flashed_messages() %}
-      <div class="alert-error"> {{ message }}</div>
-    {% endfor %}
-<!-- end of flash messages for html -->
-<h1 class="title">
-  Welcome, {{ session.login }}!
-  <a class="nav-link" href="{{url_for('logout')}}">Logout</a>
-</h1>
+    <meta charset="utf-8">
+    <title>Moje wpisy</title>
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/styles.css">
+</head>
   <body>
-  {% if data %}
-        {% for wpis in data %}
-            <h2> <a href="/delete/{{wpis.id}}"> {{wpis.tytul}}</a> </h2>
-            <p> By {{ wpis.user_id }} on {{ wpis.data }}</p>
-            <p> <a href="/modify/{{wpis.id}}"> {{ wpis.tresc }} </a> </p>
-            <a class="nav-link" href="{{url_for('all')}}">All blog</a>
-        {% endfor %}
-    {% else %}
-        <h2> brak </h2>
-    {% endif %}
-  <a class="nav-link" href="{{url_for('add')}}">New Post</a>
-  <a class="nav-link" href="{{url_for('all')}}">All blog</a>
+        <div class="menu">
+            <a class="logout" href="{{url_for('logout')}}">Wyloguj</a>
+            <h1 id="menuLabel"><a href="/">BlogoSfera</a></h1>
+            <div class="navbar">
+                <a href="/all">Przeglądaj</a>
+                <a href="{{url_for('add')}}">Dodaj</a>
+                <a href="/mypage">Moje wpisy</a>
+            </div>
+        </div>
+
+      <div class="main">
+          <!--  flash messages for html -->
+            {% for message in get_flashed_messages() %}
+              <div class="alert-error"> {{ message }}</div>
+          {% endfor %}
+        <!-- end of flash messages for html -->
+          {% if data %}
+                {% for wpis in data %}
+                     <div class="post">
+                        <div>
+                            <div class="icon-wrapper">
+                                <a href="/modify/{{wpis.id}}"><img src="/static/images/edit.png" alt="Edit icon" class = "icon"> </a>
+                                <a href="/delete/{{wpis.id}}" onclick="return confirm('Czy na pewno chcesz usunąć post {{ wpis.tytul }}?')"><img src="/static/images/delete.png" alt="Delete icon" class = "icon"> </a>
+                            </div>
+                            <h3 id="title">{{wpis.tytul}}</h3>
+                        </div>
+                        <p>
+                            {{ wpis.tresc }}
+                        </p>
+                        <div class="signature-wrapper">
+                            <h4 id="signature">{{ wpis.user_id }}, <i>{{ wpis.data }}</i></h4>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+            <div class="post">
+                <h2> Brak notatek </h2>
+              </div>
+            {% endif %}
+      </div>
   </body>

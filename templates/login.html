@@ -1,24 +1,46 @@
- <head>
-  <!--  flash messages for html -->
-    <style>
-      .alert-error {
-        padding: 8px;
-        background-color: darkorange;
-        color: white;
-      }
-    </style>
-      <!--  end of flash messages for html -->
-  </head>
-<!--  flash messages for html -->
-    {% for message in get_flashed_messages() %}
-      <div class="alert-error"> {{ message }}</div>
-    {% endfor %}
-<!-- end of flash messages for html -->
-<form action="" method = "POST">
-    <p>email <input type = "login" name = "login" /></p>
-    <p>password <input type = "password" name = "password" /></p>
-    <p> submit <input type = "submit" value = "Submit" /></p>
-</form>
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="utf-8">
+    <title>Logowanie</title>
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/styles.css">
+</head>
+<body>
 
-<h3>Dont Have an account??</h3>
-<h3><a href = "{{url_for('register') }}">Register Here</a></h3>
+    <div class="menu">
+            <h1 id="menuLabel"><a href="/">BlogoSfera</a></h1>
+            <div class="navbar">
+                <a href="/all">Przeglądaj</a>
+                <a href="{{url_for('add')}}">Dodaj</a>
+                <a href="/mypage">Moje wpisy</a>
+            </div>
+    </div>
+    <div class="main">
+         <!--  flash messages for html -->
+        {% for message in get_flashed_messages() %}
+          <div class="alert-error"> {{ message }}</div>
+        {% endfor %}
+        <!-- end of flash messages for html -->
+        <div class="post">
+            <h3 id="new-post-header">Logowanie</h3>
+            <form  action="" method = "POST">
+                <div class="login-form">
+                    <label>Login</label>
+                    <input class="login-input" type="login" name="login">
+                    <label>Hasło</label>
+                    <input class="login-input" type="password" name="password">
+                </div>
+                <div class="button-holder">
+                    <button type="submit" class="btn-login" value = "Submit">Zaloguj</button>
+                </div>
+            </form>
+            <div class="no-account">
+                <p>Nie masz jeszcze konta? <a href = "{{url_for('register') }}"><b>Zarejestruj się </b></a></p>
+            </div>
+
+        </div>
+    </div>
+</body>
+

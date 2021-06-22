@@ -24,9 +24,7 @@ dataBase.init_app(app)
 # strona główna z wypisem ogrganiczonych wpisów
 @app.route('/')
 def welcome():
-    data = BlogSfera.query.order_by(desc(BlogSfera.id)).limit(
-        3).all()  # wyświetlanie najnowszych wpisów na stronie głównej
-
+    data = BlogSfera.query.order_by(desc(BlogSfera.id)).limit(3).all()  # wyświetlanie najnowszych wpisów na stronie głównej
     return render_template('mainpage.html', data=data)
 
 
@@ -37,12 +35,12 @@ def register():
         login = request.form['login']
         password = request.form['password']
         if not login or not password:
-            flash('Please fill in all the boxes!')
+            flash('Please fill in all the boxes.')
             return redirect(url_for('register'))
 
         user = User.query.filter_by(login=login).first()  # sprawdzenie, czy taki login istenieje
         if user:
-            flash('Please try again!')
+            flash('Please try again.')
             return redirect(url_for('register'))
 
         # hashowanie hasła
@@ -53,7 +51,7 @@ def register():
         dataBase.session.add(newUser)  # dodanie nowego użytkownika
         dataBase.session.commit()  # potwierdzenie zmian
 
-        flash('Account has been created! Log in!')
+        flash('Account has been created! Now you can log in.')
         return redirect(url_for('login'))
 
     return render_template('register.html')
@@ -67,7 +65,7 @@ def login():
         login = request.form['login']
         password = request.form['password']
         if not login or not password:
-            flash('Please fill in all the boxes!')
+            flash('Please fill in all the boxes.')
             return redirect(url_for('login'))
 
         user = User.query.filter_by(login=login).first()  # szukanie loginu w bazie
@@ -81,11 +79,11 @@ def login():
                 session.permanent = True
                 return redirect(url_for('my'))  # login jest to przekierowanie na stronę
             else:
-                flash('Try again!')
+                flash('Try again.')
                 return redirect(url_for('login'))  # login błędny powrót na login
 
         else:
-            flash('Try again!')
+            flash('Try again.')
             return redirect(url_for('login'))  # login błędny powrót na login
 
     return render_template('login.html')
@@ -122,7 +120,7 @@ def logout():
     else:
         session.pop('user_id', None)
         session['logged_in'] = False
-        flash('You are logged out. See you soon!')
+        flash('You\'ve been logged out. See you soon!')
     return redirect(url_for('welcome'))
 
 
@@ -140,13 +138,13 @@ def add():
         user_id = session["user_id"]
 
         if not tytul or not tresc:
-            flash('Please fill in all the boxes!')  # warunek na swtorzenie nowego wpisu
+            flash('Please fill in all the boxes.')  # warunek na swtorzenie nowego wpisu
             return redirect(url_for('my'))
         else:
             newPost = BlogSfera(tytul=tytul, data=data, tresc=tresc, user_id=user_id)  # tworzenie nowego wpisu
             dataBase.session.add(newPost)  # dodanie nowego wpisu do bazy
             dataBase.session.commit()  # potwierdzenie zmian
-            flash('Post was created!')
+            flash('Post was created.')
             return redirect(url_for('my'))
 
     return render_template('new.html')
@@ -155,7 +153,7 @@ def add():
 @app.route('/modify/<int:id>', methods=["GET", "POST"])
 def modify(id):
     if not session.get('logged_in'):  # jeśli osoba jest zaloogowana może dodać nowy post, jeśli nie to logowanie
-        flash('Please login first')
+        flash('Please login first.')
         return redirect(url_for('login'))
 
     updatePost = BlogSfera.query.filter_by(id=id).first()  # znalezienie w bazie modyfikowanego rekordu
@@ -171,7 +169,7 @@ def modify(id):
             updatePost.data = datetime.date.today()
             try:
                 dataBase.session.commit()  # zatwierdzenie nowych treści
-                flash('Post was updated!')
+                flash('Post was updated.')
                 return redirect(url_for('my'))
 
             except:
@@ -191,7 +189,7 @@ def delete(id):
     wpis = BlogSfera.query.filter_by(id=id).first()
 
     if not wpis.user_id == session["user_id"]:
-        flash('This is not your post')
+        flash('This is not your post.')
         return redirect(url_for('my'))
     else:
         BlogSfera.query.filter_by(id=id).delete()

@@ -1,0 +1,203 @@
+*{font-family: 'Roboto', sans-serif;}
+
+a, a:hover, a:visited, a:active {
+    color: inherit;
+    text-decoration: none;
+}
+
+.alert-error {
+     text-align: center;
+     width: 30%;
+     padding: 1% 1% 1% 1%;
+     background-color: orange;
+     color: white;
+     font-weight: bold;
+     overflow: hidden;
+     margin: 0 auto;
+     border-radius: 25px;
+}
+
+#menuLabel {
+    color: orange;
+    font-size: 60px;
+    top: 0;
+    text-align: center;
+    margin-bottom: 15px;
+    margin-top: 10px;
+}
+
+.menu {
+    overflow: hidden;
+    display: block;
+    width:100%;
+    top: 0;
+    margin:0 auto;
+    position: fixed; 
+    background: white;
+    padding-bottom: 10px;
+}
+
+.navbar {
+    font-weight: bold;
+    width:800px; 
+    margin:0 auto;
+  }
+  
+  .navbar a {
+    font-size: 18px;
+    float: left;
+    display: block;
+    background: white;
+    text-align: center;
+    padding: 15px 55px 15px 55px;
+    text-decoration: none;
+    border-radius: 25px;
+    transition: background-color 0.8;
+    margin-left: 5%;
+    margin-right: 5%;
+  }
+
+  .navbar a:hover {
+    background: orange;
+    color: white;
+    border-radius: 25px;
+  }
+
+  .main {
+    overflow: auto;
+    margin-top: 170px;
+  }
+
+  .post {
+    width: 50%;
+    margin:0 auto;
+    background-color: #fafafa;
+    padding: 50px 50px 50px 50px;
+    margin-top: 50px;
+    margin-bottom: 50px;
+  }
+
+  #title {
+    font-size: 20px;
+    margin-top:0px;
+  }
+
+  .icon {
+    width: 20px;
+    height: 20px;
+    margin-left: 5px;
+  }
+  
+  .icon-wrapper {
+    overflow: hidden;
+    width:60px;
+    float: right;
+  }
+  
+  .signature-wrapper {
+    padding: 0px 15px 0px 15px;
+    overflow: hidden;
+    float: right;
+  }
+
+  #signature {
+    margin-top: 0px;
+    font-weight:normal;
+    font-size: 16px;
+  }
+
+.new-post {
+    width: 100%;
+}
+
+label {
+    margin-top: 5px;
+    display: block;
+    padding: 10px 10px 10px 0px;
+}
+
+.post-input {
+    font-size: 15px;
+    width: 96%;
+    display: block;
+    margin-bottom: 20px;
+    height: 300px;
+    padding: 1% 2% 1% 2%;
+    text-align: top;
+}
+
+.title-input {
+    font-size: 15px;
+    width: 96%;
+    display: block;
+    padding: 1% 2% 1% 2%;
+}
+
+#new-post-header {
+    font-size: 20px;
+    margin-top:-10px;
+    margin-bottom:0px;
+    text-align: center;
+  }
+
+.button-holder{
+    text-align: center;
+}
+
+.btn-submit{
+    font-weight: bold;
+    font-size: 14px;
+    padding: 12px 42px;
+    background: orange;
+    color: white;
+    border-radius: 12px;
+    border: 0px;
+    margin-top: 20px;
+    margin-bottom: 0px;
+    text-align: center;
+}
+
+.login-input {
+    font-size: 15px;
+    width: 60%;
+    display: block;
+    padding: 1% 2% 1% 2%;
+}
+
+.login-form {
+    padding-bottom: 2%;
+    padding-left: 26%;
+}
+
+.no-account{
+    margin-top: 30px;
+    text-align: center;
+}
+
+.btn-login{
+    font-weight: bold;
+    font-size: 14px;
+    padding: 12px 15%;
+    background: orange;
+    color: white;
+    border-radius: 12px;
+    border: 0px;
+    margin-top: 20px;
+    margin-bottom: 0px;
+    text-align: center;
+}
+
+.logout:hover{
+    color: orange;
+    font-weight: bold;
+    position:fixed;
+    right: 5%;
+    top: 5%;
+}
+
+.logout{
+    font-weight: bold;
+    position:fixed;
+    right: 5%;
+    top: 5%;
+}

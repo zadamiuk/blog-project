@@ -1,36 +1,49 @@
 <!DOCTYPE html>
-<html>
+<html lang="pl">
+
 <head>
+    <meta charset="utf-8">
     <title>Home</title>
-     <!--  flash messages for html -->
-    <style>
-      .alert-error {
-        padding: 8px;
-        background-color: darkorange;
-        color: white;
-      }
-    </style>
-      <!--  end of flash messages for html -->
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/styles.css">
 </head>
+
 <body>
-<!--  flash messages for html -->
-    {% for message in get_flashed_messages() %}
-      <div class="alert-error"> {{ message }}</div>
-    {% endfor %}
-<!-- end of flash messages for html -->
-    {% if data %}
-        {% for wpis in data %}
-            <h2> <a href="/delete/{{wpis.id}}"> {{wpis.tytul}}</a> </h2>
-            <p> By {{ wpis.user_id }} on {{ wpis.data }}</p>
-            <p> {{ wpis.tresc }}</p>
-        {% endfor %}
-    {% else %}
-        <h2> No posts on BlogSfera </h2>
-    {% endif %}
-    <li class="nav-item">
-        <a class="nav-link" href="{{url_for('add')}}">New Post</a>
-        <a class="nav-link" href="{{url_for('login')}}">Login</a>
-        <a class="nav-link" href="{{url_for('register')}}">Register</a>
-    </li>
+        <div class="menu">
+            <a class="logout" href="{{url_for('logout')}}">Wyloguj</a>
+            <h1 id="menuLabel"><a href="/">BlogoSfera</a></h1>
+            <div class="navbar">
+                <a href="/all">Przeglądaj</a>
+                <a href="{{url_for('add')}}">Dodaj</a>
+                <a href="/mypage">Moje wpisy</a>
+            </div>
+        </div>
+
+    <div class="main">
+        <!--  flash messages for html -->
+            {% for message in get_flashed_messages() %}
+              <div class="alert-error"> {{ message }}</div>
+            {% endfor %}
+        <!-- end of flash messages for html -->
+
+        {% if data %}
+            {% for wpis in data %}
+                <div class="post">
+                    <div>
+                        <h3 id="title">{{wpis.tytul}}</h3>
+                    </div>
+                    <p>
+                        {{ wpis.tresc }}
+                    </p>
+                    <div class="signature-wrapper">
+                        <h4 id="signature">{{ wpis.user_id }}, <i>{{ wpis.data }}</i></h4>
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <h2> No posts on BlogoSfera </h2>
+        {% endif %}
+    </div>
 </body>
 </html>
