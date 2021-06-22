@@ -190,13 +190,14 @@ label {
 .logout:hover{
     color: orange;
     font-weight: bold;
-    position:fixed;
-    right: 5%;
-    top: 5%;
 }
 
 .logout{
+    margin-left: 15px;
     font-weight: bold;
+}
+
+.login-wrapper{
     position:fixed;
     right: 5%;
     top: 5%;

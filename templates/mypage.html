@@ -9,7 +9,9 @@
 </head>
   <body>
         <div class="menu">
-            <a class="logout" href="{{url_for('logout')}}">Wyloguj</a>
+            <div class="login-wrapper">
+                <a class="logout" href="{{url_for('logout')}}">Wyloguj</a>
+            </div>
             <h1 id="menuLabel"><a href="/">BlogoSfera</a></h1>
             <div class="navbar">
                 <a href="/all">Przeglądaj</a>
@@ -38,7 +40,7 @@
                             {{ wpis.tresc }}
                         </p>
                         <div class="signature-wrapper">
-                            <h4 id="signature">{{ wpis.user_id }}, <i>{{ wpis.data }}</i></h4>
+                            <h4 id="signature">{{ wpis.login }}, <i>{{ wpis.data }}</i></h4>
                         </div>
                     </div>
                 {% endfor %}

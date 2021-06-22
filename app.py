@@ -7,6 +7,8 @@ from flask import Flask, render_template, request, flash, redirect, url_for, ses
 from sqlalchemy import desc
 from datetime import timedelta
 
+from sqlalchemy.orm import Session
+
 from models import User, BlogSfera, dataBase
 
 # stworzenie aplikacji
@@ -110,7 +112,6 @@ def all():
     data = BlogSfera.query.all()
 
     return render_template('all.html', data=data)
-
 
 # wylogowanie użytkownika
 @app.route('/logout')
