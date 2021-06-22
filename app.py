@@ -16,9 +16,10 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = 'kod'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///baza.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=1) #czas sesji to 5 minut
+app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=1)  # czas sesji to 5 minut
 
 dataBase.init_app(app)
+
 
 # strona główna z wypisem ogrganiczonych wpisów
 @app.route('/')
@@ -90,15 +91,27 @@ def login():
     return render_template('login.html')
 
 
-# strona użytkownika ze wszystkimi wpisami innych użytkowników
+# strona użytkownika z jego wszystkimi wpisami
 @app.route('/mypage')
 def my():
     if not session.get('logged_in'):
         return redirect(url_for('login'))
 
-    data = BlogSfera.query.all()
+    user = session['user_id']
+
+    data = BlogSfera.query.filter_by(user_id=user).all()
 
     return render_template('mypage.html', data=data)
+
+
+@app.route('/all')
+def all():
+    if not session.get('logged_in'):
+        return redirect(url_for('login'))
+
+    data = BlogSfera.query.all()
+
+    return render_template('all.html', data=data)
 
 
 # wylogowanie użytkownika
@@ -145,10 +158,7 @@ def modify(id):
         flash('Please login first')
         return redirect(url_for('login'))
 
-
-    updatePost = BlogSfera.query.filter_by(id=id).first() #znalezienie w bazie modyfikowanego rekordu
-
-
+    updatePost = BlogSfera.query.filter_by(id=id).first()  # znalezienie w bazie modyfikowanego rekordu
 
     if request.method == 'POST':
 
@@ -156,17 +166,17 @@ def modify(id):
             flash('This was not your post. Changes are not saved')
             return redirect(url_for('my'))
         else:
-            updatePost.tytul = request.form['title']    #pobranie nowych informacji
+            updatePost.tytul = request.form['title']  # pobranie nowych informacji
             updatePost.tresc = request.form['content']
             updatePost.data = datetime.date.today()
             try:
-                dataBase.session.commit() #zatwierdzenie nowych treści
+                dataBase.session.commit()  # zatwierdzenie nowych treści
                 flash('Post was updated!')
                 return redirect(url_for('my'))
+
             except:
                 flash("Error!  Looks like there was a problem...try again!")
                 return render_template("modify.html", updatePost=updatePost)
-
 
     else:
         return render_template('modify.html', updatePost=updatePost)
@@ -177,7 +187,9 @@ def modify(id):
 def delete(id):
     if not session.get('logged_in'):  # jeśli osoba jest zaloogowana może dodać nowy post, jeśli nie to logowanie
         return redirect(url_for('login'))
+
     wpis = BlogSfera.query.filter_by(id=id).first()
+
     if not wpis.user_id == session["user_id"]:
         flash('This is not your post')
         return redirect(url_for('my'))
@@ -186,13 +198,6 @@ def delete(id):
         dataBase.session.commit()
 
         return redirect(url_for('my'))
-
-
-# funkcja do połączenia z bazą
-def dataBaseConn():
-    conn = sqlite3.connect('baza.db')
-    conn.row_factory = sqlite3.Row
-    return conn
 
 
 # uruchomienie aplikacji

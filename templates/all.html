@@ -1,5 +1,8 @@
+<!DOCTYPE html>
+<html>
 <head>
-  <!--  flash messages for html -->
+    <title>Home</title>
+     <!--  flash messages for html -->
     <style>
       .alert-error {
         padding: 8px;
@@ -8,27 +11,25 @@
       }
     </style>
       <!--  end of flash messages for html -->
-  </head>
+</head>
+<body>
 <!--  flash messages for html -->
     {% for message in get_flashed_messages() %}
       <div class="alert-error"> {{ message }}</div>
     {% endfor %}
 <!-- end of flash messages for html -->
-<h1 class="title">
-  Welcome, {{ session.login }}!
-  <a class="nav-link" href="{{url_for('logout')}}">Logout</a>
-</h1>
-  <body>
-  {% if data %}
+    {% if data %}
         {% for wpis in data %}
             <h2> <a href="/delete/{{wpis.id}}"> {{wpis.tytul}}</a> </h2>
             <p> By {{ wpis.user_id }} on {{ wpis.data }}</p>
-            <p> <a href="/modify/{{wpis.id}}"> {{ wpis.tresc }} </a> </p>
-            <a class="nav-link" href="{{url_for('all')}}">All blog</a>
+            <p> {{ wpis.tresc }}</p>
         {% endfor %}
     {% else %}
-        <h2> brak </h2>
+        <h2> No posts on BlogSfera </h2>
     {% endif %}
-  <a class="nav-link" href="{{url_for('add')}}">New Post</a>
-  <a class="nav-link" href="{{url_for('all')}}">All blog</a>
-  </body>
+    <li class="nav-item">
+        <a class="nav-link" href="{{url_for('my')}}">My Page</a>
+        <a class="nav-link" href="{{url_for('logout')}}">Logout</a>
+    </li>
+</body>
+</html>
