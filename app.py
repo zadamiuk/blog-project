@@ -5,6 +5,7 @@ import bcrypt
 
 from flask import Flask, render_template, request, flash, redirect, url_for, session
 from sqlalchemy import desc
+from datetime import timedelta
 
 from models import User, BlogSfera, dataBase
 
@@ -15,6 +16,7 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = 'kod'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///baza.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=1) #czas sesji to 5 minut
 
 dataBase.init_app(app)
 
@@ -75,6 +77,7 @@ def login():
             if bcrypt.checkpw(password.encode('utf8'), hashed_password):
                 session['logged_in'] = True
                 session['user_id'] = user.id
+                session.permanent = True
                 return redirect(url_for('my'))  # login jest to przekierowanie na stronę
             else:
                 flash('Try again!')
@@ -142,20 +145,29 @@ def modify(id):
         flash('Please login first')
         return redirect(url_for('login'))
 
+
     updatePost = BlogSfera.query.filter_by(id=id).first() #znalezienie w bazie modyfikowanego rekordu
+
+
 
     if request.method == 'POST':
 
-        updatePost.tytul = request.form['title']    #pobranie nowych informacji
-        updatePost.tresc = request.form['content']
-        updatePost.data = datetime.date.today()
-        try:
-            dataBase.session.commit() #zatwierdzenie nowych treści
-            flash('Post was updated!')
+        if not updatePost.user_id == session["user_id"]:
+            flash('This was not your post. Changes are not saved')
             return redirect(url_for('my'))
-        except:
-            flash("Error!  Looks like there was a problem...try again!")
-            return render_template("modify.html", updatePost=updatePost)
+        else:
+            updatePost.tytul = request.form['title']    #pobranie nowych informacji
+            updatePost.tresc = request.form['content']
+            updatePost.data = datetime.date.today()
+            try:
+                dataBase.session.commit() #zatwierdzenie nowych treści
+                flash('Post was updated!')
+                return redirect(url_for('my'))
+            except:
+                flash("Error!  Looks like there was a problem...try again!")
+                return render_template("modify.html", updatePost=updatePost)
+
+
     else:
         return render_template('modify.html', updatePost=updatePost)
 

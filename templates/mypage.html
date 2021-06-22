@@ -1,3 +1,19 @@
+<head>
+  <!--  flash messages for html -->
+    <style>
+      .alert-error {
+        padding: 8px;
+        background-color: darkorange;
+        color: white;
+      }
+    </style>
+      <!--  end of flash messages for html -->
+  </head>
+<!--  flash messages for html -->
+    {% for message in get_flashed_messages() %}
+      <div class="alert-error"> {{ message }}</div>
+    {% endfor %}
+<!-- end of flash messages for html -->
 <h1 class="title">
   Welcome, {{ session.login }}!
   <a class="nav-link" href="{{url_for('logout')}}">Logout</a>
