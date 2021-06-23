@@ -18,7 +18,7 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = 'kod'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///baza.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=1)  # czas sesji to 5 minut
+app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=5)  # czas sesji to 5 minut
 
 dataBase.init_app(app)
 
